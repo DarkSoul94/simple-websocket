@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/DarkSoul94/simple-websocket/app"
@@ -27,13 +28,12 @@ var upgrader = websocket.Upgrader{
 func (h *Handler) WsEndpoint(w http.ResponseWriter, r *http.Request) {
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 
-	ws, _ := upgrader.Upgrade(w, r, nil)
-	// if err != nil {
-	// 	w.Header().Set("Content-Type", "application/json")
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	json.NewEncoder(w).Encode(map[string]interface{}{"status": "error"})
-	// }
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{"status": "error"})
+	}
 
-	
 	go h.uc.ClientHandler(ws)
 }
