@@ -1,0 +1,6 @@
+release: false
+name: 'simple websocket'
+http_port: 8888
+log:
+  dir: 'logs'
+  file: 'app.log'
