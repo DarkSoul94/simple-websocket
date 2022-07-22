@@ -1,7 +1,7 @@
 package app
 
-import "github.com/gorilla/websocket"
+import "github.com/DarkSoul94/simple-websocket/models"
 
 type IUsecase interface {
-	ClientHandler(conn *websocket.Conn)
+	MessageHandler(req models.Message) models.Message
 }

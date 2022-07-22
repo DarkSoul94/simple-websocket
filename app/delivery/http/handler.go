@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/DarkSoul94/simple-websocket/app"
+	"github.com/DarkSoul94/simple-websocket/models"
 	"github.com/gorilla/websocket"
 )
 
@@ -35,5 +36,24 @@ func (h *Handler) WsEndpoint(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]interface{}{"status": "error"})
 	}
 
-	go h.uc.ClientHandler(ws)
+	for {
+		var req models.Message
+
+		mt, message, err := ws.ReadMessage()
+		if err != nil || mt == websocket.CloseMessage {
+			break
+		}
+
+		err = json.Unmarshal(message, &req)
+		if err != nil {
+			break
+		}
+
+		resp := h.uc.MessageHandler(req)
+
+		err = ws.WriteJSON(resp)
+		if err != nil {
+			break
+		}
+	}
 }
